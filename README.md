@@ -1,13 +1,13 @@
 # Git Docker Tool
 
-一个轻量工具镜像，内置 `git`、`docker`、`docker compose`、`ssh`、`curl`、`jq` 等常用命令，方便在 NAS 或服务器上进入容器后管理宿主机 Docker 和拉取代码。
+一个轻量工具镜像，内置 `git`、`docker`、`docker compose`、`ssh`、`curl`、`jq`、`ttyd` 等常用命令，方便在 NAS 或服务器上通过网页终端管理宿主机 Docker 和拉取代码。
 
 这个仓库只负责构建和发布镜像，不再保存运行用的 compose 模板。
 
 ## 文件
 
 - `Dockerfile`: 定义工具镜像。
-- `entrypoint.sh`: 启动时准备 `/workspace/.ssh`，检查 Docker socket，然后保持容器常驻。
+- `entrypoint.sh`: 启动时准备 `/workspace/.ssh`，检查 Docker socket，然后进入网页终端。
 - `.github/workflows/docker-image.yml`: 推送版本 tag 时自动构建并发布多架构镜像。
 - `.dockerignore`: 排除本地代码目录、Git 元数据和说明文件，缩小 Docker build context。
 
@@ -46,19 +46,32 @@ ghcr.io/<github-owner>/<repo>:v1.2.3
 
 ## 运行
 
-启动容器：
+启动容器并开放网页终端：
 
 ```bash
 docker run -d \
   --name git-docker-tool \
   --restart unless-stopped \
   --memory 128m \
+  -p 7681:7681 \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v /volume1/code:/workspace \
   ghcr.io/<github-owner>/<repo>:latest
 ```
 
-进入容器：
+浏览器打开：
+
+```text
+http://服务器IP:7681
+```
+
+默认账号密码：
+
+```text
+admin / adminadmin
+```
+
+也可以直接进入容器：
 
 ```bash
 docker exec -it git-docker-tool bash

@@ -21,8 +21,4 @@ else
   echo "Docker socket not found at /var/run/docker.sock. Mount it to control host containers."
 fi
 
-if [ "$#" -eq 0 ]; then
-  exec tail -f /dev/null
-fi
-
 exec "$@"

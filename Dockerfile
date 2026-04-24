@@ -9,6 +9,7 @@ RUN apk add --no-cache \
     jq \
     openssh-client \
     rsync \
+    ttyd \
     vim \
   && mkdir -p /workspace
 
@@ -17,8 +18,9 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 WORKDIR /workspace
 VOLUME ["/workspace"]
+EXPOSE 7681
 
 USER root
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-CMD ["tail", "-f", "/dev/null"]
+CMD ["ttyd", "-W", "-c", "admin:adminadmin", "-p", "7681", "bash"]

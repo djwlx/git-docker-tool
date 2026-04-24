@@ -7,7 +7,7 @@
 ## 文件
 
 - `Dockerfile`: 定义工具镜像。
-- `entrypoint.sh`: 启动时准备 `/workspace/.ssh`，检查 Docker socket，然后进入网页终端。
+- `entrypoint.sh`: 启动时准备 `$HOME/.ssh`，检查 Docker socket，然后进入网页终端。
 - `.github/workflows/docker-image.yml`: 推送版本 tag 时自动构建并发布多架构镜像。
 - `.dockerignore`: 排除本地代码目录、Git 元数据和说明文件，缩小 Docker build context。
 
@@ -18,7 +18,7 @@
 - `/workspace`: 持久化工作目录。Git 仓库、compose 项目、脚本和 SSH 配置都放这里；Dockerfile 已声明为 volume。
 - `/var/run/docker.sock`: 宿主机 Docker socket。需要 bind mount 这个 socket，容器里的 `docker` / `docker compose` 才能管理宿主机容器。
 
-通常只需要准备一个宿主机目录，例如 `/volume1/code`，然后挂载到容器内的 `/workspace`：
+容器默认设置了 `HOME=/workspace`，所以 Git 全局配置、SSH 配置和常见 CLI 的用户级配置都会写到这个持久化目录。通常只需要准备一个宿主机目录，例如 `/volume1/code`，然后挂载到容器内的 `/workspace`：
 
 ```text
 /volume1/code
@@ -77,7 +77,14 @@ admin / adminadmin
 docker exec -it git-docker-tool bash
 ```
 
-容器内默认工作目录是 `/workspace`。启动时会把 `/root/.ssh` 指向 `/workspace/.ssh`，所以宿主机的 `/volume1/code/.ssh` 会直接用于 `git clone`、`ssh` 等命令。
+容器内默认工作目录和 HOME 都是 `/workspace`，所以宿主机的 `/volume1/code/.ssh` 会直接用于 `git clone`、`ssh` 等命令。
+
+Git 全局用户名和邮箱也会持久化到宿主机的 `/volume1/code/.gitconfig`：
+
+```bash
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+```
 
 ## 本地构建
 

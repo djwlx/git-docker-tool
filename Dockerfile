@@ -16,6 +16,7 @@ RUN apk add --no-cache \
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
+ENV HOME=/workspace
 WORKDIR /workspace
 VOLUME ["/workspace"]
 EXPOSE 7681

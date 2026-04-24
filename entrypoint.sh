@@ -1,14 +1,12 @@
 #!/usr/bin/env sh
 set -eu
 
-mkdir -p /workspace/.ssh
-chmod 700 /workspace/.ssh 2>/dev/null || true
+: "${HOME:=/workspace}"
 
-if [ ! -e /root/.ssh ] || [ -L /root/.ssh ]; then
-  ln -sfn /workspace/.ssh /root/.ssh
-fi
+mkdir -p "$HOME/.ssh"
+chmod 700 "$HOME/.ssh" 2>/dev/null || true
 
-find /workspace/.ssh -type f -name 'id_*' -exec chmod 600 {} \; 2>/dev/null || true
+find "$HOME/.ssh" -type f -name 'id_*' -exec chmod 600 {} \; 2>/dev/null || true
 
 if [ -S /var/run/docker.sock ]; then
   SOCKET_GID="$(stat -c '%g' /var/run/docker.sock 2>/dev/null || true)"

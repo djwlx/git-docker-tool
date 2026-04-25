@@ -18,7 +18,7 @@
 - `/workspace`: 持久化工作目录。Git 仓库、compose 项目、脚本和 SSH 配置都放这里；Dockerfile 已声明为 volume。
 - `/var/run/docker.sock`: 宿主机 Docker socket。需要 bind mount 这个 socket，容器里的 `docker` / `docker compose` 才能管理宿主机容器。
 
-容器默认设置了 `HOME=/workspace`，所以 Git 全局配置、SSH 配置和常见 CLI 的用户级配置都会写到这个持久化目录。通常只需要准备一个宿主机目录，例如 `/volume1/code`，然后挂载到容器内的 `/workspace`：
+容器默认设置了 `HOME=/workspace`，并把 root 用户的 home 也设为 `/workspace`，所以 Git 全局配置、SSH 配置和常见 CLI 的用户级配置都会写到这个持久化目录。通常只需要准备一个宿主机目录，例如 `/volume1/code`，然后挂载到容器内的 `/workspace`：
 
 ```text
 /volume1/code

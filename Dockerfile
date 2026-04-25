@@ -11,7 +11,8 @@ RUN apk add --no-cache \
     rsync \
     ttyd \
     vim \
-  && mkdir -p /workspace
+  && mkdir -p /workspace \
+  && sed -i 's#^root:x:0:0:root:/root:#root:x:0:0:root:/workspace:#' /etc/passwd
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh

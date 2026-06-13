@@ -2,6 +2,14 @@
 set -eu
 
 : "${HOME:=/workspace}"
+: "${TTYD_CREDENTIALS:=admin:adminadmin}"
+: "${TTYD_PORT:=7681}"
+: "${MANAGEMENT_HOST:=0.0.0.0}"
+: "${MANAGEMENT_PORT:=7680}"
+: "${COMPOSE_ROOT:=/workspace/configs/docker}"
+: "${STATE_FILE:=/workspace/.git-docker-tool-state.json}"
+: "${PRUNE_INTERVAL_HOURS:=24}"
+export HOME TTYD_CREDENTIALS TTYD_PORT MANAGEMENT_HOST MANAGEMENT_PORT COMPOSE_ROOT STATE_FILE PRUNE_INTERVAL_HOURS
 
 mkdir -p "$HOME/.ssh"
 chmod 700 "$HOME/.ssh" 2>/dev/null || true
@@ -17,6 +25,12 @@ if [ -S /var/run/docker.sock ]; then
   fi
 else
   echo "Docker socket not found at /var/run/docker.sock. Mount it to control host containers."
+fi
+
+python3 -m app.manage_web &
+
+if [ "$#" -eq 0 ]; then
+  set -- ttyd -W -c "$TTYD_CREDENTIALS" -p "$TTYD_PORT" bash
 fi
 
 exec "$@"

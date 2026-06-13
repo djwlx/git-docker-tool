@@ -8,21 +8,24 @@ RUN apk add --no-cache \
     git \
     jq \
     openssh-client \
+    python3 \
     rsync \
     ttyd \
     vim \
   && mkdir -p /workspace \
   && sed -i 's#^root:x:0:0:root:/root:#root:x:0:0:root:/workspace:#' /etc/passwd
 
+COPY app /opt/git-docker-tool/app
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 ENV HOME=/workspace
+ENV PYTHONPATH=/opt/git-docker-tool
 WORKDIR /workspace
 VOLUME ["/workspace"]
+EXPOSE 7680
 EXPOSE 7681
 
 USER root
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-CMD ["ttyd", "-W", "-c", "admin:adminadmin", "-p", "7681", "bash"]

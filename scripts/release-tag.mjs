@@ -2,6 +2,7 @@
 
 import process from 'node:process';
 import { execFileSync } from 'node:child_process';
+import { pathToFileURL } from 'node:url';
 
 const VALID_BUMP_TYPES = new Set(['major', 'minor', 'patch']);
 const VERSION_TAG_PATTERN = /^v(\d+)\.(\d+)\.(\d+)$/;
@@ -82,6 +83,13 @@ export function bumpVersion(currentTag, bumpType) {
   return `v${major}.${minor}.${patch}`;
 }
 
+export function isExecutedDirectly(scriptPath, importMetaUrl) {
+  if (!scriptPath) {
+    return false;
+  }
+  return pathToFileURL(scriptPath).href === importMetaUrl;
+}
+
 function runGit(args, options = {}) {
   return execFileSync('git', args, {
     cwd: options.cwd ?? process.cwd(),
@@ -132,7 +140,7 @@ function main() {
   console.log(`Released ${nextTag}`);
 }
 
-if (import.meta.url === new URL(process.argv[1], 'file:').href) {
+if (isExecutedDirectly(process.argv[1], import.meta.url)) {
   try {
     main();
   } catch (error) {

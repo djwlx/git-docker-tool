@@ -1,8 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 import {
   bumpVersion,
+  isExecutedDirectly,
   normalizeBumpType,
   selectLatestVersionTag,
 } from '../scripts/release-tag.mjs';
@@ -39,4 +42,10 @@ test('bumpVersion increments major and resets minor and patch', () => {
 
 test('bumpVersion starts from v0.0.1 when no current tag exists', () => {
   assert.equal(bumpVersion(null, 'patch'), 'v0.0.1');
+});
+
+test('isExecutedDirectly matches Windows script paths', () => {
+  const scriptPath = path.resolve('scripts/release-tag.mjs');
+  const importMetaUrl = pathToFileURL(scriptPath).href;
+  assert.equal(isExecutedDirectly(scriptPath, importMetaUrl), true);
 });

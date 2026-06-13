@@ -129,6 +129,33 @@ git config --global user.email "you@example.com"
 docker build -t git-docker-tool:local .
 ```
 
+## 发布 Tag
+
+仓库提供了一个 Node 脚本用来自动发布语义化版本 tag，推送后会触发 GitHub Actions 构建镜像。
+
+默认发布补丁版本：
+
+```bash
+node scripts/release-tag.mjs
+```
+
+也可以显式指定版本类型：
+
+```bash
+node scripts/release-tag.mjs patch
+node scripts/release-tag.mjs minor
+node scripts/release-tag.mjs major
+```
+
+脚本会自动执行这些步骤：
+
+- `git fetch --tags origin`
+- 检查当前工作区是否干净
+- 找到最新的 `vX.Y.Z` tag
+- 计算下一个版本号
+- 在当前 `HEAD` 创建新 tag
+- 推送 tag 到 `origin`
+
 ## 权限说明
 
 镜像默认以 root 运行，因为 NAS 上的 `/var/run/docker.sock` 通常只有 root 或 docker 组能访问。挂载 Docker socket 后，能进入这个容器的人基本等价于拥有宿主机 Docker 管理权限。

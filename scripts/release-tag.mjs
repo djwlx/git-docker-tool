@@ -90,12 +90,20 @@ export function isExecutedDirectly(scriptPath, importMetaUrl) {
   return pathToFileURL(scriptPath).href === importMetaUrl;
 }
 
+export function normalizeGitCommandOutput(output) {
+  if (output === null || output === undefined) {
+    return '';
+  }
+  return String(output).trim();
+}
+
 function runGit(args, options = {}) {
-  return execFileSync('git', args, {
+  const output = execFileSync('git', args, {
     cwd: options.cwd ?? process.cwd(),
     encoding: 'utf8',
     stdio: options.stdio ?? ['ignore', 'pipe', 'pipe'],
-  }).trim();
+  });
+  return normalizeGitCommandOutput(output);
 }
 
 function ensureCleanWorktree() {

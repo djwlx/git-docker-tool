@@ -7,6 +7,7 @@ import {
   bumpVersion,
   isExecutedDirectly,
   normalizeBumpType,
+  normalizeGitCommandOutput,
   selectLatestVersionTag,
 } from '../scripts/release-tag.mjs';
 
@@ -48,4 +49,8 @@ test('isExecutedDirectly matches Windows script paths', () => {
   const scriptPath = path.resolve('scripts/release-tag.mjs');
   const importMetaUrl = pathToFileURL(scriptPath).href;
   assert.equal(isExecutedDirectly(scriptPath, importMetaUrl), true);
+});
+
+test('normalizeGitCommandOutput handles inherited stdio null output', () => {
+  assert.equal(normalizeGitCommandOutput(null), '');
 });
